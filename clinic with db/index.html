@@ -1,0 +1,116 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2f4fd8"><link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<title>ClinicPad EMR</title>
+<style>
+:root{--bg:#eef1f8;--card:#fff;--tx:#1a2140;--mut:#6b7390;--pri:#2f4fd8;--ln:#e2e6f0;--acc:#26c6da;--ok:#1d9e5c;--wn:#c07d0e;--bd:#d63c2f}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f1220;--card:#1a1f36;--tx:#eef0fa;--mut:#9aa2c0;--ln:#2a3050}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+#app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--card);padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.bar{background:var(--pri);color:#fff;padding:calc(12px + env(safe-area-inset-top,0px)) 12px 12px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:5}
+.bar h1{font-size:17px;margin:0;flex:1}.bar button{background:none;border:0;color:#fff;font-size:22px;min-width:40px;min-height:40px}
+.pill{font-size:11px;border:1px solid #fff8;border-radius:99px;padding:2px 9px;white-space:nowrap}
+.off{background:#fdf3e2;color:var(--wn);padding:8px 16px;font-size:13px}
+.hero{height:130px;background:linear-gradient(135deg,#2f4fd8,#26c6da);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:32px;font-weight:800}.hero small{font-size:12px;font-weight:400;opacity:.9}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px}
+.stat{background:var(--bg);border-radius:12px;padding:10px;text-align:center}.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:var(--mut)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 16px 16px}
+.tile{padding:18px 6px;text-align:center;border:1px solid var(--ln);border-radius:14px;background:none;font-size:14px;font-weight:600}.tile b{display:block;font-size:26px;margin-bottom:4px}
+.tabs{display:flex;margin:12px 16px;border:1px solid var(--pri);border-radius:20px;overflow:hidden}
+.tabs button{flex:1;padding:9px;border:0;background:none;color:var(--pri);font-weight:600}.tabs .on{background:var(--pri);color:#fff}
+.row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--ln)}.row.tap{cursor:pointer}.row .t{flex:1;min-width:0}.row small{display:block;color:var(--mut)}
+.av{width:44px;height:44px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+.dot{width:28px;height:28px;border-radius:50%;flex:none}
+.chip{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--bg);color:var(--mut)}.chip.ok{color:var(--ok)}.chip.wn{color:var(--wn)}.chip.bd{color:var(--bd)}
+.mini{border:1px solid var(--pri);background:none;color:var(--pri);border-radius:99px;padding:4px 12px;font-size:12px;font-weight:600;margin-top:6px;margin-right:6px}.mini.d{border-color:var(--bd);color:var(--bd)}
+.pad{padding:16px}label{display:block;font-size:12px;color:var(--mut);margin:12px 0 4px}
+input,select,textarea{width:100%;padding:11px;border:1px solid var(--ln);border-radius:8px;background:var(--bg)}
+.btn{margin-top:16px;width:100%;padding:13px;border:0;border-radius:10px;background:var(--pri);color:#fff;font-weight:700}.btn.g{background:none;color:var(--pri);border:1px solid var(--pri)}
+.empty{text-align:center;color:var(--mut);padding:32px 16px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:flex;background:var(--card);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav button{flex:1;border:0;background:none;padding:9px 0;font-size:11px;color:var(--mut)}.nav b{display:block;font-size:20px}.nav .on{color:var(--pri);font-weight:700}
+.fab{position:fixed;right:max(16px,calc(50% - 224px));bottom:calc(80px + env(safe-area-inset-bottom,0px));width:54px;height:54px;border-radius:50%;background:var(--acc);color:#fff;border:0;font-size:28px;box-shadow:0 3px 10px #0004}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1a2140;color:#fff;padding:9px 16px;border-radius:99px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}#toast.on{opacity:1}
+.install-notice{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:20px;background:#10162999}.install-panel{width:100%;max-width:360px;padding:22px;border-radius:14px;background:var(--card);box-shadow:0 16px 48px #0004}.install-panel h2{margin:0 0 8px;font-size:20px}.install-panel p{margin:0;color:var(--mut);font-size:14px}.install-panel .btn{margin-top:18px}.install-panel .btn.g{margin-top:8px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body><div id="app"></div><div id="toast" role="status"></div>
+<script>
+const K='clinicpad_v1',$=s=>document.querySelector(s);
+const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ini=n=>n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const seed={P:[{id:'p1',n:'Rosella Sergi',a:39,g:'F',ph:'0917 000 0001',ad:'12 Rizal St',s:'2026-09-01'},{id:'p2',n:'James Butt',a:45,g:'M',ph:'0918 000 0002',ad:'5 Mabini St',s:'2026-09-03'},{id:'p3',n:'Leena Paprocki',a:29,g:'F',ph:'',ad:'639 4th Street',s:'2026-09-10'}],A:[],E:{},clinic:'KIND Clinic'};
+let D;try{D=JSON.parse(localStorage.getItem(K))}catch(e){}D=D||seed;
+let user=null;try{user=localStorage.getItem('cp_user')}catch(e){}
+let S=[{v:'home'}],ft='up',pend=0,dp=null,q='';
+const MEDS=['Paracetamol 500 mg','Amoxicillin 500 mg','Metformin 500 mg','Amlodipine 5 mg','Losartan 50 mg','Omeprazole 20 mg','Cetirizine 10 mg','Ibuprofen 400 mg','Azithromycin 500 mg','Salbutamol 100 mcg','Atorvastatin 20 mg','Vitamin D3 1000 IU'];
+const SEC={visit:['Visit History','#2f4fd8'],
+vit:['Vitals','#2ecc71',[['BP (120/80)'],['Pulse bpm','number'],['Temp °C','number'],['Weight kg','number']],1],
+med:['Medications','#27ae60',[['Medicine','text',1],['Dose'],['Frequency']]],
+note:['Clinical Notes','#3a3fd8',[['Write a note…','area']]],
+cond:['Conditions','#1e7bff',[['Condition']]],vac:['Vaccination','#8a9bd0',[['Vaccine']]],
+all:['Allergies','#e0a800',[['Allergy']]],bill:['Billings','#7f8c8d',[['Item'],['Amount ₱','number']],1]};
+function save(){try{localStorage.setItem(K,JSON.stringify(D))}catch(e){toast('Storage is full — export a backup')}if(!navigator.onLine)pend++;bar()}
+function toast(m){const t=$('#toast');t.textContent=m;t.className='on';clearTimeout(toast.t);toast.t=setTimeout(()=>t.className='',2000)}
+const P=id=>D.P.find(p=>p.id===id);
+const isOver=a=>a.st=='sched'&&new Date(a.d+'T'+(a.t||'23:59'))<new Date();
+function chip(a){return a.st=='done'?'<span class="chip ok">Finished</span>':a.st=='cancel'?'<span class="chip bd">Cancelled</span>':isOver(a)?'<span class="chip wn">Overdue — update</span>':'<span class="chip">Scheduled</span>'}
+function go(o){S.push(o);draw()}function back(){S.length>1&&S.pop();draw()}function root(v){S=[{v}];q='';draw()}
+function bar(){const p=$('#pill'),o=$('#offb');if(p)p.textContent=navigator.onLine?'Online':'Offline'+(pend?' · '+pend+' queued':'');if(o)o.style.display=navigator.onLine?'none':'block'}
+function head(t,b){return `<div class="bar">${b?'<button aria-label="Back" onclick="back()">←</button>':''}<h1>${t}</h1><span class="pill" id="pill"></span></div><div class="off" id="offb" style="display:none">You are offline. Changes are saved on this device and will sync when you reconnect.</div>`}
+const V={
+home(){const t=ymd(new Date()),n=D.A.filter(a=>a.d==t&&a.st=='sched').length,o=D.A.filter(isOver).length;
+return `<div class="hero">dr.pad<small>${esc(D.clinic)}</small></div><div class="stats"><div class="stat"><b>${n}</b><span>Today</span></div><div class="stat"><b>${o}</b><span>Overdue</span></div><div class="stat"><b>${D.P.length}</b><span>Patients</span></div></div><div class="grid">`+
+[['➕','Add patient','np'],['🗓️','Add appointment','na'],['👤','Patients','pl'],['📋','Appointments','al'],['💊','Prescriptions','rx'],['🧪','Medicines','md'],['💳','Billing','bl'],['🏥','Clinics & team','cl']].map(x=>`<button class="tile" onclick="${x[2]=='np'||x[2]=='na'?`go({v:'${x[2]}'})`:`root('${x[2]}')`}"><b>${x[0]}</b>${x[1]}</button>`).join('')+'</div>'},
+pl(){return `<div class="pad" style="padding-bottom:0"><input type="search" placeholder="Search by name or phone" value="${esc(q)}" oninput="q=this.value;$('#plist').innerHTML=plist()"></div><div id="plist">${plist()}</div><button class="fab" aria-label="Add patient" onclick="go({v:'np'})">+</button>`},
+al(){const l=D.A.filter(a=>ft=='up'?a.st=='sched':a.st!='sched').sort((x,y)=>(x.d+x.t).localeCompare(y.d+y.t));
+return `<div class="tabs"><button class="${ft=='up'?'on':''}" onclick="ft='up';draw()">To do</button><button class="${ft=='past'?'on':''}" onclick="ft='past';draw()">Finished / cancelled</button></div>`+
+(l.length?l.map(a=>`<div class="row"><div class="av">${ini(P(a.p)?P(a.p).n:'?')}</div><div class="t"><b>${esc(P(a.p)?P(a.p).n:'Deleted patient')}</b><small>${a.d} · ${a.t}</small><small>${esc(a.r||'—')}</small>${chip(a)}${a.st=='sched'?`<div><button class="mini" onclick="go({v:'rs',id:'${a.id}'})">Reschedule</button><button class="mini" onclick="setA('${a.id}','done')">Finish</button><button class="mini d" onclick="setA('${a.id}','cancel')">Cancel</button></div>`:''}</div></div>`).join(''):`<div class="empty">${ft=='up'?'No appointments to do. Tap + to add one.':'Nothing here yet.'}</div>`)+`<button class="fab" aria-label="Add appointment" onclick="go({v:'na'})">+</button>`},
+pt(s){const p=P(s.id);return `<div class="row"><div class="av" style="width:60px;height:60px;font-size:20px">${ini(p.n)}</div><div class="t"><b>${esc(p.n)}</b><small>${p.a} yrs · ${p.g=='F'?'Female':p.g=='M'?'Male':'Other'}</small><small>${esc(p.ph||'No phone')}</small><small>${esc(p.ad||'')}</small></div></div>`+
+Object.keys(SEC).map(k=>{const n=k=='visit'?D.A.filter(a=>a.p==p.id&&a.st=='done').length:(D.E[p.id+k]||[]).length;return `<div class="row tap" onclick="go({v:'sec',id:'${p.id}',k:'${k}'})"><div class="dot" style="background:${SEC[k][1]}"></div><div class="t"><b>${SEC[k][0]}</b></div><small>${n||''}</small><span>›</span></div>`}).join('')+
+`<div class="pad"><button class="btn g" onclick="if(confirm('Delete this patient and their records?'))delP('${p.id}')">Delete patient</button></div>`},
+sec(s){const p=P(s.id),c=SEC[s.k];if(s.k=='visit'){const l=D.A.filter(a=>a.p==p.id&&a.st=='done');return `<div class="pad"><b>${esc(p.n)}</b><small style="display:block;color:var(--mut)">Finished appointments appear here automatically.</small></div>`+(l.length?l.map(a=>`<div class="row"><div class="t">${a.d} · ${a.t}<small>${esc(a.r||'Visit')}</small></div></div>`).join(''):'<div class="empty">No finished visits yet.</div>')}
+const key=p.id+s.k,l=D.E[key]||[];
+return `<div class="pad"><b>${esc(p.n)}</b>`+c[2].map((f,i)=>`<label>${f[0]}</label>${f[1]=='area'?`<textarea id="f${i}" rows="4"></textarea>`:`<input id="f${i}" type="${f[1]||'text'}" ${f[1]=='number'?'step="any" inputmode="decimal"':''} ${f[2]?'list="meds"':''}>`}`).join('')+`<datalist id="meds">${MEDS.map(m=>`<option value="${m}">`).join('')}</datalist><button class="btn" onclick="addE('${key}',${c[2].length},'${s.k}')">Save entry</button></div>`+
+(l.length?l.map((e,i)=>`<div class="row"><div class="t">${e.v.map((x,j)=>x?esc(c[3]?c[2][j][0].split(' ')[0]+' '+x:x):'').filter(Boolean).join(' · ')}<small>${e.t}</small></div><button class="mini d" aria-label="Delete entry" onclick="delE('${key}',${i})">✕</button></div>`).join(''):'<div class="empty">No records yet.</div>')},
+np(){return `<div class="pad"><label>Full name *</label><input id="fn" autocomplete="off"><label>Age</label><input id="fa" type="number" inputmode="numeric"><label>Gender</label><select id="fg"><option value="F">Female</option><option value="M">Male</option><option value="O">Other</option></select><label>Phone</label><input id="fp" type="tel"><label>Address</label><input id="fd"><button class="btn" onclick="saveP()">Save patient</button></div>`},
+na(){if(!D.P.length)return '<div class="empty">Add a patient first.</div>';return `<div class="pad"><label>Patient</label><select id="ap">${D.P.map(p=>`<option value="${p.id}">${esc(p.n)}</option>`).join('')}</select><label>Date</label><input id="ad" type="date" value="${ymd(new Date())}"><label>Time</label><input id="at" type="time" value="09:00"><label>Reason for visit</label><textarea id="ar" rows="3"></textarea><button class="btn" onclick="saveA()">Save appointment</button></div>`},
+set(){return `<div class="pad"><div class="row" style="padding:0 0 12px"><div class="t"><b>Install ClinicPad</b><small>Add it to your home screen to use it like an app.</small><small>Android (Chrome): ⋮ menu → Install app. iPhone (Safari): Share → Add to Home Screen.</small></div></div>${dp?'<button class="btn" style="margin-top:0" onclick="inst()">Install now</button>':''}
+<label>Clinic name</label><input value="${esc(D.clinic)}" onchange="D.clinic=this.value;save();toast('Saved')"><button class="btn g" onclick="exportD()">Export backup (JSON)</button><button class="btn g" onclick="logout()">Log out</button><p style="color:var(--mut);font-size:12px">Data is stored on this device only in this version. Cloud sync needs a backend.</p></div>`}};
+const TITLE={home:D.clinic,pl:'Patients',al:'Appointments',pt:'Patient',sec:'',np:'Add patient',na:'Add appointment',set:'Settings'};
+function plist(){const s=q.toLowerCase(),l=D.P.filter(p=>(p.n+' '+p.ph).toLowerCase().includes(s));return l.length?l.map(p=>`<div class="row tap" onclick="go({v:'pt',id:'${p.id}'})"><div class="av">${ini(p.n)}</div><div class="t"><b>${esc(p.n)}</b><small>${p.a} yrs · ${esc(p.ph||'No phone')}</small></div><span>›</span></div>`).join(''):'<div class="empty">No patients found.</div>'}
+function draw(){const a=$('#app');
+if(!user){a.innerHTML=head('ClinicPad login')+'<div class="hero">dr.pad</div><div class="pad"><label>Username</label><input id="lu" autocomplete="username"><label>Password</label><input id="lp" type="password" autocomplete="current-password"><button class="btn" onclick="login()">Log in</button><p style="color:var(--mut);font-size:12px">Demo login: any username and password works.</p></div>';bar();return}
+const s=S[S.length-1],b=S.length>1;let t=TITLE[s.v];if(s.v=='sec')t=SEC[s.k][0];if(s.v=='home')t=D.clinic;
+a.innerHTML=head(esc(t),b)+V[s.v](s)+`<nav class="nav">${[['home','🏠','Home'],['pl','👤','Patients'],['al','📋','Visits'],['rx','💊','Rx'],['set','⚙️','Settings']].map(n=>`<button class="${S[0].v==n[0]?'on':''}" onclick="root('${n[0]}')"><b>${n[1]}</b>${n[2]}</button>`).join('')}</nav>`;bar();scrollTo(0,0)}
+function login(){if(!$('#lu').value.trim()||!$('#lp').value)return toast('Enter username and password');user=$('#lu').value.trim();try{localStorage.setItem('cp_user',user)}catch(e){}draw()}
+function logout(){user=null;try{localStorage.removeItem('cp_user')}catch(e){}S=[{v:'home'}];draw()}
+function saveP(){const n=$('#fn').value.trim();if(!n)return toast('Enter the patient name');const p={id:'p'+Date.now(),n,a:+$('#fa').value||0,g:$('#fg').value,ph:$('#fp').value.trim(),ad:$('#fd').value.trim(),s:ymd(new Date())};D.P.unshift(p);save();S=[{v:'pl'},{v:'pt',id:p.id}];draw();toast('Patient saved')}
+function delP(id){D.P=D.P.filter(p=>p.id!=id);D.A=D.A.filter(a=>a.p!=id);Object.keys(D.E).forEach(k=>{if(k.startsWith(id))delete D.E[k]});save();S=[{v:'pl'}];draw();toast('Patient deleted')}
+function saveA(){if(!$('#ad').value)return toast('Choose a date');D.A.push({id:'a'+Date.now(),p:$('#ap').value,d:$('#ad').value,t:$('#at').value,r:$('#ar').value.trim(),st:'sched'});save();ft='up';S=[{v:'al'}];draw();toast('Appointment saved')}
+function setA(id,st){D.A.find(a=>a.id==id).st=st;save();draw();toast(st=='done'?'Marked finished':'Marked cancelled')}
+function addE(key,n,k){const v=[];for(let i=0;i<n;i++)v.push($('#f'+i).value.trim());if(!v.some(Boolean))return toast('Fill in at least one field');(D.E[key]=D.E[key]||[]).unshift({v,t:new Date().toLocaleString()});save();draw();toast('Entry saved')}
+function delE(key,i){if(!confirm('Delete this entry?'))return;D.E[key].splice(i,1);save();draw()}
+function exportD(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,2)],{type:'application/json'}));a.download='clinicpad-backup-'+ymd(new Date())+'.json';a.click();toast('Backup downloaded')}
+function closeInstallNotice(){try{localStorage.setItem('cp_install_dismissed',String(Date.now()))}catch(e){}$('#installNotice')?.remove()}
+function showInstallNotice(){
+if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)return;
+let dismissed=0;try{dismissed=+(localStorage.getItem('cp_install_dismissed')||0)}catch(e){}
+if(dismissed&&Date.now()-dismissed<7*24*60*60*1000)return;
+const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+document.querySelector('#installNotice')?.remove();
+document.body.insertAdjacentHTML('beforeend',`<div class="install-notice" id="installNotice" role="dialog" aria-modal="true" aria-labelledby="installTitle"><div class="install-panel"><h2 id="installTitle">Install ClinicPad</h2><p>${dp?'I-install ang ClinicPad para mabilis itong buksan na parang app.':ios?'Para i-install: i-tap ang Share, pagkatapos ay “Add to Home Screen.”':'Buksan ang browser menu at piliin ang “Install app” o “Add to Home Screen.”'}</p>${dp?'<button class="btn" onclick="inst()">Install application</button>':''}<button class="btn g" onclick="closeInstallNotice()">Not now</button></div></div>`)
+}
+async function inst(){if(!dp)return;const promptEvent=dp;await promptEvent.prompt();const choice=await promptEvent.userChoice;dp=null;if(choice.outcome==='accepted')try{localStorage.removeItem('cp_install_dismissed')}catch(e){}$('#installNotice')?.remove();draw()}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;showInstallNotice();if(S[S.length-1].v=='set')draw()});
+addEventListener('appinstalled',()=>{dp=null;try{localStorage.removeItem('cp_install_dismissed')}catch(e){}$('#installNotice')?.remove()});
+addEventListener('online',()=>{if(pend){toast('Back online — '+pend+' change(s) synced (simulated)');pend=0}bar()});
+addEventListener('offline',()=>{toast('You are offline');bar()});
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+draw();
+showInstallNotice();
+</script><script src="extra.js"></script></body></html>
